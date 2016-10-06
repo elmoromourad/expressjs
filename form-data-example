@@ -1,1 +1,57 @@
-test
+var http = require('http');
+
+// BODY
+postBody = new Buffer (
+    '------WebKitFormBoundary7MA4YWxkTrZu0gW'     + "\r\n" +
+    'Content-Disposition: form-data; name="NAME"' + "\r\n" +
+    '\r\n' +
+    'VALUE' + "\r\n" +
+    '------WebKitFormBoundary7MA4YWxkTrZu0gW'     + "\r\n" +
+    'Content-Disposition: form-data; name="NAME"' + "\r\n" +
+    '\r\n' +
+    'VALUE' + "\r\n" +
+    '------WebKitFormBoundary7MA4YWxkTrZu0gW'     + "\r\n" +
+    'Content-Disposition: form-data; name="NAME"' + "\r\n" +
+    '\r\n' +
+    'VALUE' + "\r\n" +
+    '------WebKitFormBoundary7MA4YWxkTrZu0gW'                               + "\r\n" +
+    'Content-Disposition: form-data; name="NAME"; filename="FILE_NAME.EXT"' + "\r\n" +
+    'Content-Type: FILE_TYPE_HERE'                                          + "\r\n" +
+    '\r\n' +
+    ' ' + "\r\n" +
+    '------WebKitFormBoundary7MA4YWxkTrZu0gW--'
+);
+
+// HEADERS
+var headers = {
+    "Content-Type": "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW",
+    "Content-Length": postBody.length
+};
+
+// OPTIONS
+var options = {
+    hostname: 'HOST_NAME',
+    port: 'PORT',
+    path: '/PATH',
+    method: 'METHOD',
+    headers: headers
+};
+
+var responseBody = '';
+
+// set up the request and the callbacks to handle the response data (and errors)
+var request = http.request(options, function(response) {
+    response.on('data', function (chunk) {
+        responseBody += chunk;
+    });
+    response.on('end',function() {
+        console.log(responseBody);
+    });
+});
+
+request.on('error', function(e) {
+    console.error('problem with request: ' + e.message);
+});
+
+request.write(postBody);
+request.end();
